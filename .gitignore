@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Environment
+.env
+
+# Data: raw superstore csv is large. Generated sales.csv IS committed.
+data/raw/superstore-sales.csv
+
+# OS
+.DS_Store
+Thumbs.db

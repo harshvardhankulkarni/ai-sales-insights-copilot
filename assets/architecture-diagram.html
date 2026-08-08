@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Sales Insights Copilot - Architecture</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --panel: #12121c;
+    --border: #22223a;
+    --accent1: #6c63ff;
+    --accent2: #00d4aa;
+    --text: #e6e6f0;
+    --muted: #8a8aa0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    padding: 40px 20px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+  .sub { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .diagram {
+    margin-top: 30px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 8px;
+  }
+  svg { width: 100%; height: auto; display: block; }
+  .card { margin-top: 24px; }
+  .card h2 { font-size: 15px; color: var(--accent2); margin-bottom: 10px; }
+  .step-list { list-style: none; }
+  .step-list li {
+    padding: 12px 14px;
+    background: var(--panel);
+    background: #12121c;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .step-list li .tag {
+    display: inline-block;
+    color: #0a0a0f;
+    border-radius: 5px;
+    padding: 1px 7px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-right: 9px;
+  }
+  .tag.data { background: var(--accent1, #6c63ff); }
+  .tag.und  { background: #c084fc; }
+  .tag.ana  { background: #f59e0b; }
+  .tag.chart{ background: var(--accent2); }
+  .tag.llm  { background: #38bdf8; }
+  .tag.ans  { background: #4ade80; }
+  .foot { margin-top: 26px; color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>AI Sales Insights Copilot</h1>
+  <div class="sub">Data flow from question to answer: numbers, chart, insight. Each step is grounded in the pandas result.</div>
+
+  <div class="diagram">
+  <svg viewBox="0 0 680 460" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <defs>
+        <linearGradient id="gAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#6c63ff"/>
+          <stop offset="100%" stop-color="#00d4aa"/>
+        </linearGradient>
+        <linearGradient id="gBox" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#1b1b33"/>
+          <stop offset="100%" stop-color="#12121c"/>
+        </linearGradient>
+      </defs>
+    </defs>
+
+    <!-- Node 1: Data -->
+    <rect x="230" y="16" width="220" height="52" rx="12" fill="url(#gBox)" stroke="url(#gAccent)" stroke-width="1.6"/>
+    <text x="340" y="38" text-anchor="middle" fill="#e6e6f0" font-size="14" font-weight="600">Synthetic Sales Data</text>
+    <text x="340" y="58" text-anchor="middle" fill="#8a8aa0" font-size="11">180 days, pandas DataFrame</text>
+
+    <line x1="340" y1="82" x2="340" y2="118" stroke="#3a3a5a" stroke-width="1.6"/>
+
+    <!-- Node 2 NL handler -->
+    <rect x="160" y="120" width="360" height="52" rx="12" fill="url(#gBox)" stroke="url(#gAccent)" stroke-width="1.6"/>
+    <text x="340" y="142" text-anchor="middle" fill="#e6e6f0" font-size="14" font-weight="600">NL Question Handler</text>
+    <text x="340" y="162" text-anchor="middle" fill="#8a8aa0" font-size="11">classify: trend, best day, comparison, top product</text>
+
+    <line x1="340" y1="172" x2="340" y2="208" stroke="#3a3a5a" stroke-width="1.6"/>
+
+    <!-- Node 3 Analysis -->
+    <rect x="160" y="210" width="360" height="52" rx="12" fill="url(#gBox)" stroke="url(#gAccent)" stroke-width="1.6"/>
+    <text x="340" y="232" text-anchor="middle" fill="#e6e6f0" font-size="14" font-weight="600">Analysis Engine (pandas)</text>
+    <text x="340" y="252" text-anchor="middle" fill="#8a8aa0" font-size="11">computes the numbers. the source of truth</text>
+
+    <line x1="340" y1="262" x2="340" y2="298" stroke="#3a3a5a" stroke-width="1.6"/>
+
+    <!-- Node 4 Chart -->
+    <rect x="160" y="300" width="360" height="52" rx="12" fill="url(#gBox)" stroke="url(#gAccent)" stroke-width="1.6"/>
+    <text x="340" y="322" text-anchor="middle" fill="#e6e6f0" font-size="14" font-weight="600">Chart Builder (Plotly)</text>
+    <text x="340" y="342" text-anchor="middle" fill="#8a8aa0" font-size="11">chart matches the pandas numbers</text>
+
+    <line x1="340" y1="352" x2="340" y2="388" stroke="#3a3a5a" stroke-width="1.6"/>
+
+    <!-- Node 5 Insight -->
+    <rect x="160" y="390" width="360" height="52" rx="12" fill="url(#gBox)" stroke="url(#gAccent)" stroke-width="1.6"/>
+    <text x="340" y="412" text-anchor="middle" fill="#e6e6f0" font-size="14" font-weight="600">Insight Writer (LLM)</text>
+    <text x="340" y="432" text-anchor="middle" fill="#8a8aa0" font-size="11">writes prose only. grounded, never computes</text>
+
+    <line x1="340" y1="442" x2="340" y2="478" stroke="#3a3a5a" stroke-width="1.6"/>
+
+    <!-- Answer banner -->
+    <rect x="90" y="482" width="500" height="52" rx="12" fill="#101018" stroke="url(#gAccent)" stroke-width="1.8"/>
+    <text x="340" y="502" text-anchor="middle" fill="#00d4aa" font-size="15" font-weight="700">Answer</text>
+    <text x="340" y="522" text-anchor="middle" fill="#8a8aa0" font-size="11">chart + insight + numbers</text>
+  </svg>
+  </div>
+
+  <div class="card">
+    <h2>How it runs</h2>
+    <ul class="step-list">
+      <li><span class="tag data">DATA</span>Load or generate 180 days of synthetic sales.</li>
+      <li><span class="tag und">UNDERSTAND</span>Classify the question into one seeded type.</li>
+      <li><span class="tag ana">ANALYZE</span>Pandas computes numbers. No LLM here.</li>
+      <li><span class="tag chart">CHART</span>Plotly builds one chart from those numbers.</li>
+      <li><span class="tag llm">INSIGHT</span>The LLM turns the numbers into a sentence.</li>
+      <li><span class="tag ans">ANSWER</span>The user gets chart, numbers, and insight.</li>
+    </ul>
+    <div class="foot">Also runs a weekly auto-insight path: weekly summary to the LLM to a stored narrative.</div>
+  </div>
+</div>
+</body>
+</html>
