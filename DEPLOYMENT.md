@@ -8,7 +8,7 @@
 ## 1. Prerequisites
 
 - Python 3.11 or higher.
-- OpenAI API key.
+- An OpenRouter API key.
 - Git.
 - A GitHub account for `harshvardhankulkarni`.
 
@@ -33,21 +33,15 @@ cp .env.example .env
 Add your key.
 
 ```
-OPENAI_API_KEY=sk-your-key-here
-LLM_MODEL=gpt-4o-mini
-SALES_DAYS=180
+OPENROUTER_API_KEY=your-key-here
+LLM_MODEL=openai/gpt-oss-20b:free
 ```
 
 Never commit `.env`. `.gitignore` keeps it out.
 
-## 4. Generate Sales Data
+## 4. Data
 
-```bash
-mkdir -p data
-python scripts/generate_sales.py
-```
-
-This writes `data/sales.csv` with about 180 rows of synthetic sales.
+`data/sales.csv` is committed: 365 daily rows from the Superstore source. No generation step. If the file is ever missing, run `python scripts/generate_sales.py`.
 
 ## 5. Run the Copilot
 
@@ -63,17 +57,20 @@ Open `localhost:8501`.
 python -m pytest
 ```
 
-Run the analysis engine checks in `tests/test_analyze.py`.
+22 tests. Then run the live check:
+
+```bash
+python scripts/smoke_test.py
+```
 
 ## 7. Git Push
 
+The remote already points to the repo. To publish changes:
+
 ```bash
-git init
 git add .
-git commit -m "feat: AI Sales Insights Copilot"
-git branch -M main
-git remote add origin https://github.com/harshvardhankulkarni/AI-Sales-Insights-Copilot.git
-git push -u origin main
+git commit -m "feat: describe the change"
+git push origin main
 ```
 
 ## 8. GitHub Pages
@@ -86,13 +83,14 @@ git push -u origin main
 Pages URL after a few minutes:
 
 ```
-https://harshvardhankulkarni.github.io/AI-Sales-Insights-Copilot/
+https://harshvardhankulkarni.github.io/ai-sales-insights-copilot/
 ```
 
-Pages serves the static docs and architecture diagram. The Streamlit app runs locally only. The documented page is the project story and the architecture report.
+Pages serves the README and the docs. The Streamlit app runs locally only. The public page is the project story and architecture report.
 
 ## 9. Notes
 
 - This is a local demo. No cloud hosting for the Streamlit app.
 - The API key stays in `.env` locally.
-- Keep question types limited so the hosted story stays reliable.
+- The app talks to OpenRouter, not directly to OpenAI.
+- Free models are rate limited. Slow answers are expected, and the app turns a slow model into a grounded fallback instead of a hang.

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theme B — Command Center</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: #0d1117;
+    color: #e6edf3;
+    line-height: 1.5;
+  }
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid #21262d; background: #161b22; }
+  .brand { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; letter-spacing: 0.08em; color: #7ee787; }
+  .meta { font-size: 12px; color: #8b949e; }
+  .layout { display: grid; grid-template-columns: 400px 1fr; min-height: calc(100vh - 44px); }
+  .chatcol { border-right: 1px solid #21262d; display: flex; flex-direction: column; background: #0d1117; }
+  .chathead { padding: 14px 18px; border-bottom: 1px solid #21262d; font-size: 13px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.1em; }
+  .thread { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+  .msg { border-radius: 8px; padding: 10px 12px; font-size: 13.5px; max-width: 95%; }
+  .q { background: #161b22; border: 1px solid #30363d; align-self: flex-end; color: #e6edf3; }
+  .a { background: #0d1117; border: 1px solid #30363d; align-self: flex-start; color: #c9d1d9; }
+  .a b { color: #7ee787; }
+  .ex { display: block; width: 100%; text-align: left; background: #161b22; color: #8b949e; border: 1px solid #30363d; border-radius: 8px; padding: 9px 12px; margin-bottom: 8px; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .ex:hover { color: #e6edf3; border-color: #58a6ff; }
+  .ask { display: flex; gap: 8px; padding: 12px 18px; border-top: 1px solid #21262d; }
+  .ask input { flex: 1; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 10px 12px; color: #e6edf3; font-size: 13.5px; }
+  .ask input:focus { border-color: #58a6ff; outline: none; }
+  .ask button { background: #238636; color: #fff; border: 0; border-radius: 8px; padding: 10px 16px; font-size: 13.5px; cursor: pointer; }
+  .ask button:hover { background: #2ea043; }
+  .right { padding: 20px 22px; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+  .kpi { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 12px 14px; }
+  .kpi .label { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.08em; }
+  .kpi .value { font-size: 22px; font-weight: 600; margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .kpi .delta { font-size: 12px; margin-top: 2px; }
+  .up { color: #7ee787; }
+  .down { color: #ff7b72; }
+  .panel { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 16px 18px; }
+  .panel h2 { font-size: 13px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; margin-bottom: 12px; }
+  .bars { display: flex; align-items: flex-end; gap: 8px; height: 190px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .bar { width: 100%; background: #30363d; border-radius: 3px; transition: background 0.15s; }
+  .bar.hot { background: #238636; }
+  .bar-col:hover .bar { background: #58a6ff; }
+  .day { font-size: 11px; color: #8b949e; }
+  .insight { margin-top: 14px; font-size: 13px; color: #c9d1d9; background: #0d1117; border: 1px solid #21262d; border-left: 3px solid #7ee787; padding: 10px 12px; border-radius: 0 8px 8px 0; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">SALES-COPILOT</div>
+  <div class="meta">data: sales.csv · 365 days · openai/gpt-oss-20b:free</div>
+</div>
+<div class="layout">
+  <div class="chatcol">
+    <div class="chathead" style="padding:12px 18px;border-bottom:1px solid #21262d;font-size:12px;color:#8b949e;">EXAMPLE QUESTIONS</div>
+    <div style="padding:12px 18px;">
+      <button class="ex" data-q="What was our best day of the week?">What was our best day of the week?</button>
+      <button class="ex" data-q="Is revenue going up?">Is revenue going up?</button>
+      <button class="ex" data-q="How does this month compare to last?">How does this month compare to last?</button>
+    </div>
+    <div class="thread" id="thread"></div>
+    <div class="ask">
+      <input id="askInput" placeholder="Ask a sales question…" aria-label="Ask a question">
+      <button id="askBtn">Ask</button>
+    </div>
+  </div>
+  <div class="right">
+    <div class="kpis">
+      <div class="kpi"><div class="label">Last 30d</div><div class="value">16,647.04</div><div class="delta down">−4.37% vs Nov</div></div>
+      <div class="kpi"><div class="label">Best weekday</div><div class="value">Thursday</div><div class="delta">2,423.10 avg</div></div>
+      <div class="kpi"><div class="label">7d trend</div><div class="value">+35.06%</div><div class="delta up">prior 7d: 1,626.35</div></div>
+    </div>
+    <div class="panel">
+      <h2>Average revenue by weekday</h2>
+      <div class="bars" id="bars"></div>
+      <div class="insight" id="insight">Thursday averages <b>2,423.10</b>. Plan staffing and offers for that day.</div>
+    </div>
+  </div>
+</div>
+<script>
+const ANSWERS = {
+  "What was our best day of the week?": "Thursday is the best weekday, averaging <b>2,423.10</b>.",
+  "Is revenue going up?": "Yes. 7-day average is <b>2,196.51</b>, up <b>35.06%</b> from the prior week.",
+  "How does this month compare to last?": "This month totals <b>16,647.04</b>, down <b>4.37%</b> from 17,407.27."
+};
+const means = [1806.99, 1905.60, 1811.17, 2423.10, 2295.95, 1559.12, 1829.99];
+const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const maxV = Math.max(...means);
+const bars = document.getElementById("bars");
+days.forEach((d, i) => {
+  const col = document.createElement("div");
+  col.className = "bar-col";
+  const h = Math.round(means[i] / maxV * 160);
+  col.innerHTML = `<div class="bar${d === "Thu" ? " hot" : ""}" style="height:${h}px"></div><div class="day">${d}</div>`;
+  bars.appendChild(col);
+});
+const thread = document.getElementById("thread");
+function ask(q) {
+  const qb = document.createElement("div");
+  qb.className = "msg q"; qb.textContent = q;
+  const ab = document.createElement("div");
+  ab.className = "msg a"; ab.innerHTML = ANSWERS[q] || "I can answer best day, trend, and month comparison questions.";
+  thread.appendChild(qb); thread.appendChild(ab);
+}
+document.querySelectorAll(".ex").forEach(b => b.addEventListener("click", () => ask(b.dataset.q)));
+document.getElementById("askBtn").addEventListener("click", () => {
+  const v = document.getElementById("askInput").value.trim();
+  if (v) ask(v);
+});
+document.getElementById("askInput").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("askBtn").click(); });
+</script>
+</body>
+</html>

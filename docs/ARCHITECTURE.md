@@ -4,18 +4,22 @@
 
 ## Overview
 
-The system runs a pipeline. A user types a question. The pipeline classifies the question, computes the answer with pandas, builds a Plotly chart, and writes a plain-language insight with the LLM.
+The system is a pipeline. A user types a question. The pipeline classifies it, computes the answer with pandas, builds a Plotly chart, and asks the LLM to narrate the numbers.
 
-The rule that holds everything together is grounding. All numbers come from pandas. The LLM writes prose only and never computes. The chart reads the pandas result, so chart and numbers always agree.
+The core rule is grounding. All numbers come from pandas. The LLM writes prose only and never computes. The chart reads the pandas result, so chart and numbers always agree.
+
+## Data
+
+`data/sales.csv`: 365 rows of daily revenue, derived from the real Tableau Superstore dataset. Loaded by `app/data.py`.
 
 ## Data Flow
 
 ```
-Synthetic sales data (180 days)
+data/sales.csv (365 days, committed)
         |
         v
 [NL Question Handler]  classify question type
-        |                  (trend, best day, comparison, top product)
+        |                  (trend, best_day, comparison, fallback)
         v
 [Analysis Engine]  pandas computes the answer
         |
@@ -23,13 +27,13 @@ Synthetic sales data (180 days)
 [Chart Builder]  Plotly chart from the analysis numbers
         |
         v
-[Insight Writer (LLM)]  plain-language insight from the numbers
+[Insight Writer (LLM)]  plain-language insight from those numbers
         |
         v
-Answer = chart + insight + numbers
+Answer = chart + numbers + insight
 
 Weekly auto-insight path:
-[Data summary] ---> [LLM weekly narrative] ---> [stored insight]
+[pandas weekly totals] ---> [LLM narrative] ---> [shown in UI]
 ```
 
 Interactive version: `assets/architecture-diagram.html`.
@@ -38,12 +42,13 @@ Interactive version: `assets/architecture-diagram.html`.
 
 | Module | File | Responsibility |
 |---|---|---|
-| Data | app/data.py | Read or generate sales data |
+| Data | app/data.py | Load the sales DataFrame |
 | Understand | app/understand.py | Classify a question into a type |
-| Analyze | app/analyze.py | Compute the answer per type |
-| Charts | app/charts.py | Build the Plotly chart |
+| Analyze | app/analyze.py | Compute the answer with pandas |
+| Charts | app/charts.py | Build the Plotly chart from the result |
 | Insights | app/insights.py | Write the insight and weekly narrative |
 | Pipeline | app/pipeline.py | Compose all steps end to end |
+| Frontend | frontend/streamlit_app.py | Streamlit UI, Executive Desk theme |
 
 ## Design Decisions
 
@@ -52,8 +57,9 @@ Interactive version: `assets/architecture-diagram.html`.
 | LLM never computes | Grounding keeps the answer honest |
 | Chart from pandas output | Chart and numbers always agree |
 | Question types limited | Predictable, reliable demo |
-| Synthetic data | No live connection, no fake real data |
-| gpt-4o-mini | Cheap and strong for this job |
+| Every LLM call capped at 30s | A slow free model degrades, never hangs |
+| Model construction in try blocks | Missing key yields fallback, not crash |
+| OpenRouter free model | Zero cost, still a real LLM call |
 
 ## Sequence
 

@@ -1,0 +1,1 @@
+"""AI Sales Insights Copilot analysis package."""

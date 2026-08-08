@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theme C — Clear Journal</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: #fbfbf8;
+    color: #22252b;
+    line-height: 1.55;
+  }
+  .page { max-width: 900px; margin: 0 auto; padding: 36px 28px 60px; }
+  .mast { border-bottom: 2px solid #1f2937; padding-bottom: 16px; margin-bottom: 26px; }
+  .kicker { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: #6b7280; margin-bottom: 6px; }
+  .headline { font-family: Georgia, "Times New Roman", serif; font-size: 30px; font-weight: 400; letter-spacing: -0.01em; }
+  .lede { font-size: 15px; color: #4b5563; margin-top: 8px; max-width: 640px; }
+  .statline { display: flex; gap: 0; border-bottom: 1px solid #e5e7eb; margin-bottom: 24px; }
+  .stat { flex: 1; padding: 16px 18px 18px 0; }
+  .stat + .stat { padding-left: 18px; border-left: 1px solid #e5e7eb; }
+  .stat .k { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.08em; }
+  .stat .v { font-size: 24px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .stat .d { font-size: 13px; margin-top: 2px; }
+  .up { color: #15803d; }
+  .down { color: #b91c1c; }
+  .section-title { font-family: Georgia, "Times New Roman", serif; font-size: 19px; color: #1f2937; margin: 26px 0 12px; }
+  .chart-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px 22px; }
+  .bars { display: flex; align-items: flex-end; gap: 14px; height: 190px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .bar { width: 100%; background: #d1d5db; border-radius: 4px 4px 0 0; transition: background 0.2s; }
+  .bar.hot { background: #1f2937; }
+  .bar-col:hover .bar { background: #9ca3af; }
+  .day { font-size: 12px; color: #6b7280; }
+  .answer { display: flex; gap: 16px; align-items: flex-start; margin-top: 20px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px 20px; }
+  .aq-chip { font-size: 13px; color: #6b7280; min-width: 200px; }
+  .av { font-size: 15px; color: #1f2937; }
+  .av b { font-weight: 650; }
+  .askrow { display: flex; gap: 10px; margin-top: 26px; }
+  .askrow input { flex: 1; border: 1px solid #d1d5db; border-radius: 10px; padding: 12px 14px; font-size: 15px; background: #fff; }
+  .askrow input:focus { border-color: #1f2937; outline: none; }
+  .askrow button { background: #1f2937; color: #fff; border: 0; border-radius: 10px; padding: 12px 20px; font-size: 15px; cursor: pointer; }
+  .askrow button:hover { background: #374151; }
+  .exs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .ex { font-size: 13px; color: #4b5563; background: #fff; border: 1px solid #e5e7eb; border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  .ex:hover { border-color: #1f2937; color: #111827; }
+  .thread { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .tq { font-size: 14px; color: #374151; }
+  .ta { font-size: 15px; color: #1f2937; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px 14px; }
+  .ta b { font-weight: 650; }
+  .caption { font-size: 12px; color: #9ca3af; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="masthead">
+    <div class="meta">AI Sales Insights Copilot · daily brief</div>
+    <h1 class="headline">How trade looks today</h1>
+    <p class="lede">One question, one chart, one written answer. The numbers come from your sales data. The words come from the model, grounded in those numbers.</p>
+  </div>
+  <div class="setline">
+    <div class="stat"><div class="k">Last 30 days</div><div class="v">16,647.04</div><div class="d down">−4.37% vs prior month</div></div>
+    <div class="stat"><div class="k">Best weekday</div><div class="v">Thursday</div><div class="d">avg 2,423.10</div></div>
+    <div class="stat"><div class="k">Trend, 7 days</div><div class="v">+35.06%</div><div class="d up">vs prior week</div></div>
+  </div>
+  <h2 class="section-title" style="font-family:Georgia,serif;font-size:19px;margin:26px 0 12px;">Daily pattern</h2>
+  <div class="bars-card">
+    <div class="bars" id="bars"></div>
+    <div class="caption">Average daily revenue by weekday. Thursday leads.</div>
+  </div>
+  <div class="thread" id="thread"></div>
+  <div class="askrow">
+    <input id="askInput" placeholder="Ask your sales question…" aria-label="Ask a question">
+    <button id="askBtn">Ask</button>
+  </div>
+  <div class="exs">
+    <button class="ex" data-q="What was our best day of the week?">What was our best day of the week?</button>
+    <button class="ex" data-q="Is revenue going up?">Is revenue going up?</button>
+    <button class="ex" data-q="How does this month compare to last?">How does this month compare to last?</button>
+  </div>
+  <div class="caption" style="margin-top:18px;">Sketches @ 2026 · real number styles from app/analysis</div>
+</div>
+<script>
+const ANSWERS = {
+  "What was our best day of the week?": "Thursday is the strongest weekday, averaging <b>2,423.10</b> in daily revenue.",
+  "Is revenue going up?": "The 7-day average sits at <b>2,196.51</b>, up <b>35.06%</b> from the prior week.",
+  "How does this month compare to last?": "This month totaled <b>16,647.04</b>, down <b>4.37%</b> from last month's 17,407.27."
+};
+const means = [1806.99, 1905.60, 1811.17, 2423.10, 2295.95, 1559.12, 1829.99];
+const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const maxV = Math.max(...means);
+const bars = document.getElementById("bars");
+days.forEach((d, i) => {
+  const col = document.createElement("div");
+  col.className = "bar-col";
+  const h = Math.round(means[i] / maxV * 165);
+  col.innerHTML = `<div class="bar${d === "Thu" ? " hot" : ""}" style="height:${h}px"></div><div class="day">${d}</div>`;
+  bars.appendChild(col);
+});
+const thread = document.getElementById("thread");
+function ask(q) {
+  const qb = document.createElement("div");
+  qb.className = "tq"; qb.textContent = "Q: " + q;
+  const ab = document.createElement("div");
+  ab.className = "ta"; ab.innerHTML = ANSWERS[q] || "I can answer best day, trend, and month comparison questions.";
+  thread.appendChild(qb); thread.appendChild(ab);
+}
+document.querySelectorAll(".ex").forEach(b => b.addEventListener("click", () => ask(b.dataset.q)));
+document.getElementById("askBtn").addEventListener("click", () => {
+  const v = document.getElementById("askInput").value.trim();
+  if (v) ask(v);
+});
+document.getElementById("askInput").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("askBtn").click(); });
+</script>
+</body>
+</html>

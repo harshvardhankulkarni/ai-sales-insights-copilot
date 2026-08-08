@@ -2,6 +2,8 @@
 
 Read this file first. It gives a fresh AI tool the full project context so it starts building without asking questions. This is the single entry file for any agent or co-pilot working on this project.
 
+> **PROGRESS NOTE (2026-08-09):** Build order P5. COMPLETE. Level 1 (basics) DONE 2026-08-08. Level 2 (setup + data engine) DONE: venv, requirements.txt, app/data.py, app/analyze.py, checkpoint passed (Thursday avg 2423.10, trend up 35.06%, fallback works). Level 3 (charts + NL) DONE checkpoint passed 2026-08-08: charts.py verified vs analyze numbers, understand.py classifies through OpenRouter (openai/gpt-oss-20b:free), live run best_day/trend/comparison/fallback all correct, 12 pytest pass. Level 4 (insight + pipeline) DONE checkpoint passed 2026-08-08: insights.py (write_insight, write_weekly_insight) + pipeline.py (answer_question), live best_day and comparison returned numbers + chart + insight, weekly insight grounded, 22 pytest pass. LLM calls capped at 30s timeout, 1 retry. **Level 5 (UI + finalize) DONE 2026-08-09:** user picked Executive Desk theme from 3 sketches; frontend/streamlit_app.py built; boots headless with 4 KPI cards + chart + ask panel, no traceback; screenshot in assets/; all 6 GSD docs + README + DEPLOYMENT rewritten to match real build (OpenRouter free model, committed 365-day data, 22 tests); repo pushed. No further levels. Project complete. Note: daily sales.csv has no product column so top_product is deferred. Only OPENROUTER_API_KEY is used.
+
 ---
 
 ## 1. Project Identity
@@ -9,7 +11,7 @@ Read this file first. It gives a fresh AI tool the full project context so it st
 **Name:** AI Sales Insights Copilot
 **Repo:** `AI-Sales-Insights-Copilot`
 **GitHub user:** `harshvardhankulkarni`
-**Pages URL:** `https://harshvardhankulkarni.github.io/AI-Sales-Insights-Copilot/`
+**Pages URL:** `https://harshvardhankulkarni.github.io/ai-sales-insights-copilot/`
 **Owner:** Harsh Kulkarni
 **Role target:** Data Analyst / BI + GenAI
 
@@ -45,8 +47,8 @@ WHICH DATA TO USE: sales data in `data/raw/superstore-sales.csv` (real, 9,800 or
 |---|---|---|
 | Language | Python 3.11+ | Standard for data and AI |
 | Data | Pandas, NumPy | Analysis on sales data |
-| LLM | OpenAI GPT-4o-mini | NL question understanding and insight writing |
-| LLM SDK | LangChain | Prompt templating, structured output |
+| LLM | OpenRouter free model (openai/gpt-oss-20b:free) | NL question understanding and insight writing |
+| LLM SDK | LangChain via ChatOpenAI (OpenRouter base_url) | Prompt templating, structured output |
 | Analysis | Built-in pandas functions | Aggregations, trends, day-of-week |
 | UI | Streamlit | Chat and charts |
 | Viz | Plotly | Interactive charts from answers |
@@ -56,12 +58,12 @@ WHICH DATA TO USE: sales data in `data/raw/superstore-sales.csv` (real, 9,800 or
 ```
 langchain
 langchain-openai
-openai
 pandas
 numpy
 plotly
 streamlit
 python-dotenv
+pytest
 ```
 
 ---
@@ -71,9 +73,9 @@ python-dotenv
 Put these keys in `.env` at project root. Never commit `.env`.
 
 ```
-OPENAI_API_KEY=sk-...
-LLM_MODEL=gpt-4o-mini
-SALES_DAYS=180
+OPENROUTER_API_KEY=your-openrouter-key
+LLM_MODEL=openai/gpt-oss-20b:free
+SALES_DAYS=365
 ```
 
 `SALES_DAYS` controls how many days of sales data load. Default 180. Primary source is `data/raw/superstore-sales.csv` (Tableau Superstore, see DATA_SOURCE.md), aggregated by `scripts/generate_sales.py` into `data/sales.csv`. If the raw file is missing, the same script creates synthetic fallback sales data.

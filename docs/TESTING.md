@@ -2,75 +2,78 @@
 
 **Project:** AI Sales Insights Copilot
 
-## Test Levels
+## Test Layers
 
-The project uses two layers.
+Three layers.
 
-1. Automated unit tests with pytest, focused on the analysis engine.
-2. A manual checklist you run in the Streamlit app.
+1. Automated unit tests with pytest. Fast, offline, fake model.
+2. A live smoke test. Runs the real pipeline against OpenRouter.
+3. A manual checklist in the Streamlit app.
 
-## Automated Tests
-
-`tests/test_analyze.py` holds pytest tests for `analyze.py`.
-
-Run all:
+## 1. Unit Tests
 
 ```bash
 python -m pytest
 ```
 
-Run one file:
+22 tests in 4 files:
+
+| File | Covers |
+|---|---|
+| test_analyze.py | pandas numbers per type, fallback shape |
+| test_understand.py | classifier maps to known types, bad input to fallback |
+| test_insights.py | insight grounded in result numbers, weekly insight grounded in weekly totals, fallback on model failure |
+| test_pipeline.py | full answer dict, chart matches result, fake LLM keeps tests offline |
+
+The tests use a fake LLM. No network, no key. One integration test runs the real pipeline and is skipped when no answer arrives.
+
+## 2. Live Smoke Test
 
 ```bash
-python -m pytest tests/test_analyze.py
+python scripts/smoke_test.py
 ```
 
-## What the Unit Tests Cover
+Runs all four question types live, then the weekly insight. Each check prints PASS or FAIL. It verifies:
 
-For each question type, the test feeds a small DataFrame and checks the returned numbers.
+- The classifier returns the right type.
+- The insight quotes the pandas numbers exactly.
+- The chart plots the same numbers as the result dict.
+- An unrelated question returns the fallback, not a crash.
 
-- `trend`: returns the rolling average and a direction.
-- `best_day`: returns the day with the highest mean revenue.
-- `comparison`: returns both totals and a percent change.
-- `top_product`: returns the top product and its revenue.
-- `fallback`: returns a message and no chart numbers.
+Needs the OpenRouter key and a few minutes. The free model is slow.
 
-Grounding tests confirm `analyze.py` runs without the LLM. No API call happens in this module.
-
-## Manual Validation Checklist
+## 3. Manual Checklist
 
 Run the app. Tick each item.
 
-- [ ] Sales data generates with about 180 rows.
-- [ ] `.env` loads the API key and model.
+- [ ] KPI cards show pandas numbers.
 - [ ] A seeded example question returns an answer.
-- [ ] The chart renders.
+- [ ] The chart renders and matches the insight numbers.
 - [ ] The insight appears beside the chart.
 - [ ] The weekly auto-insight shows a narrative.
-- [ ] An unknown question returns a friendly fallback, not a crash.
+- [ ] An unknown question returns a friendly fallback.
 
 ## Acceptance Mapping
 
 | Criterion | How to test |
 |---|---|
 | LLM never computes | Read `insights.py`. Only prose prompts, no math |
-| chart matches numbers | Read the chart values against the pandas result |
+| Chart matches numbers | Extract plotted values from the figure, compare to the result |
 | Insight uses computed numbers | Every number in the insight exists in the result |
-| Question types work | Test each of the 4 types |
-| UI answers a seeded question | Ask one in Streamlit |
+| Question types work | Test each type in the smoke test |
+| UI answers a question | Ask one in Streamlit |
 
-## Manual Chart Check
+## Chart Agreement Check
 
-Ask "what is the weekday?" Read the bar values. Read the `best_day` numbers returned by `analyze`. The values must match exactly.
+Ask "what was our best day of the week?". The chart bars equal `weekday_means`. The best bar equals `avg_revenue`. Chart, numbers, and insight always agree because all three come from one pandas result.
 
-## Manual Insight Check
+## Timeout Guarantee
 
-Ask any seeded question. Read the insight. Every number in the text must appear in the pandas result. If a number appears that pandas did not output, the test fails and the insight is ungrounded.
+Every LLM call uses `request_timeout=30, max_retries=1`. A rate-limited free model cannot hang the pipeline. It degrades to the grounded fallback with the real pandas numbers.
 
 ## When to Test
 
-- After M1, test the analysis engine.
-- After M2, test chart agreement.
-- After M4, test grounding.
-- After M5, test the UI end to end.
-- After M6, re-run everything before push.
+- After any change to `app/analyze.py`: `python -m pytest tests/test_analyze.py`.
+- After changes to `understand.py` or `insights.py`: full pytest.
+- Before pushing: full pytest plus `python scripts/smoke_test.py`.
+- After changing the UI: run the app and click the example chips.

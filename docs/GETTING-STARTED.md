@@ -5,10 +5,10 @@
 ## Prerequisites
 
 - Python 3.11 or higher.
-- An OpenAI API key.
+- An OpenRouter API key. Get one at https://openrouter.ai/keys.
 - Git.
 
-## 1. Clone
+## 1. Clone or open the folder
 
 ```bash
 git clone https://github.com/harshvardhankulkarni/AI-Sales-Insights-Copilot.git
@@ -34,24 +34,22 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Edit `.env` and add your key.
+Edit `.env` and add your key. The file needs two lines:
 
 ```
-OPENAI_API_KEY=sk-your-key-here
-LLM_MODEL=gpt-4o-mini
-SALES_DAYS=180
+OPENROUTER_API_KEY=your-key-here
+LLM_MODEL=openai/gpt-oss-20b:free
 ```
 
-Never commit `.env`.
+Never commit `.env`. The `.gitignore` blocks it.
 
-## 5. Generate Sales Data
+No OpenAI key needed. The app talks to OpenRouter, which hosts free models.
 
-```bash
-mkdir -p data
-python scripts/generate_sales.py
-```
+## 5. Data
 
-This writes `data/sales.csv` with about 180 rows of synthetic daily sales.
+`data/sales.csv` is committed. It holds 365 days of daily revenue, derived from the real Tableau Superstore dataset. Nothing to generate.
+
+The generator `scripts/generate_sales.py` exists only to rebuild the file if it is ever missing.
 
 ## 6. Run the App
 
@@ -63,28 +61,37 @@ Open `http://localhost:8501`.
 
 ## 7. Ask a Question
 
-Click a seeded example question or type your own.
+Click an example chip or type your own.
 
-- "what was our best day of the week for revenue?"
-- "is revenue going up over the last 30 days?"
-- "how does this month compare to last month?"
-- "which product sold the most?"
+- "what was our best day of the week?"
+- "is revenue going up?"
+- "how does this month compare to last?"
 
-You get one chart, the numbers, and a written insight.
+You get one chart, the numbers, and a written insight. The free model can take 30 to 90 seconds to answer. The spinner shows progress.
 
 ## 8. Run the Tests
+
+Fast, offline:
 
 ```bash
 python -m pytest
 ```
 
+Full live pipeline test (a few minutes, needs the key):
+
+```bash
+python scripts/smoke_test.py
+```
+
 ## Troubleshooting
 
-**Missing API key.** Streamlit shows a key error. Add `OPENAI_API_KEY` to `.env` and restart.
+**No insight, just a canned line.** The model call failed or timed out. The app degrades to a grounded fallback with the real pandas numbers. Check your key and your connection.
 
-**No sales.csv.** Run `python scripts/generate_sales.py` first.
+**Answers are slow.** The free model is rate limited. The app caps every call at 30 seconds with one retry. A slow model degrades to the fallback instead of hanging.
 
 **Port in use.** Streamlit picks another port. Read the terminal output.
+
+**Missing sales.csv.** Run `python scripts/generate_sales.py`.
 
 ## Next
 

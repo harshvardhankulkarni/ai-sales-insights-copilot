@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theme A — Executive Desk</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: #1a1f2e;
+    background: #f6f5f1;
+    line-height: 1.5;
+  }
+  .app { max-width: 1280px; margin: 0 auto; padding: 28px 32px 48px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; }
+  .brand { font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase; color: #7a6a4d; font-weight: 600; }
+  .date { font-size: 13px; color: #8a8a85; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .kpi { background: #fff; border: 1px solid #e5e1d8; border-radius: 10px; padding: 16px 18px; }
+  .kpi .label { font-size: 12px; color: #8a8a85; text-transform: uppercase; letter-spacing: 0.06em; }
+  .kpi .value { font-size: 26px; font-weight: 700; color: #1a1f2e; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .kpi .delta { font-size: 13px; margin-top: 2px; }
+  .up { color: #1e7a4d; }
+  .down { color: #b03a2e; }
+  .layout { display: grid; grid-template-columns: 1fr 380px; gap: 22px; align-items: start; }
+  .panel { background: #fff; border: 1px solid #e5e1d8; border-radius: 10px; padding: 20px 22px; }
+  .panel h2 { font-family: Georgia, "Times New Roman", serif; font-size: 20px; font-weight: 400; color: #1a1f2e; margin-bottom: 14px; }
+  .chart { width: 100%; height: 260px; }
+  .bars { display: flex; align-items: flex-end; gap: 12px; height: 200px; padding-top: 8px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .bar { width: 100%; max-width: 64px; background: #d8d3c6; border-radius: 5px 5px 0 0; transition: background 0.2s; }
+  .bar.hot { background: #8a6d3b; }
+  .bar-col:hover .bar { background: #b09a6d; }
+  .bar-col .day { font-size: 12px; color: #6a6a65; }
+  .insight { margin-top: 16px; border-left: 3px solid #8a6d3b; padding: 10px 14px; background: #faf8f2; border-radius: 0 8px 8px 0; font-size: 14px; color: #3a3f4c; }
+  .chat { position: sticky; top: 20px; }
+  .chat h2 { font-family: Georgia, "Times New Roman", serif; font-size: 20px; font-weight: 400; }
+  .examples { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .ex { text-align: left; font-size: 13px; color: #4a4f5c; background: #f6f5f1; border: 1px solid #e5e1d8; border-radius: 8px; padding: 9px 12px; cursor: pointer; transition: border-color 0.2s; }
+  .ex:hover { border-color: #8a6d3b; color: #1a1f2e; }
+  .thread { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+  .msg { border-radius: 10px; padding: 12px 14px; font-size: 14px; }
+  .q { background: #fafafa; border: 1px solid #e5e1d8; align-self: flex-end; max-width: 90%; }
+  .a { background: #f6f5f1; border: 1px solid #e5e1d8; align-self: flex-start; max-width: 100%; }
+  .ask { display: flex; gap: 8px; }
+  .ask input { flex: 1; border: 1px solid #cfcabb; border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+  .ask button { background: #1a1f2e; color: #fff; border: 0; border-radius: 8px; padding: 10px 16px; font-size: 14px; cursor: pointer; }
+  .ask button:hover { background: #2c3350; }
+  .sep { border: 0; border-top: 1px solid #e5e1d8; margin: 14px 0; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">Sales Insights</div>
+    <div class="date">Daily report · 16 Dec 2018</div>
+  </header>
+  <div class="kpis">
+    <div class="kpi"><div class="label">Revenue, last 30d</div><div class="value">₹16.6k</div><div class="delta down">−4.37% vs Nov</div></div>
+    <div class="kpi"><div class="label">Best weekday</div><div class="value">Thursday</div><div class="delta">avg 2,423.10</div></div>
+    <div class="kpi"><div class="label">Trend, 7d</div><div class="value">+35.06%</div><div class="delta up">vs prior 7d</div></div>
+    <div class="kpi"><div class="label">Season</div><div class="value">Winter</div><div class="delta">holiday lift</div></div>
+  </div>
+  <div class="layout">
+    <div class="panel">
+      <h2>Average revenue by weekday</h2>
+      <div class="bars" id="bars"></div>
+      <div class="insight" id="insight">Thursday averages <strong>2,423.10</strong>, the strongest weekday. Focus promotions there.</div>
+    </div>
+    <div class="panel chat">
+      <h2>Ask</h2>
+      <p id="exLabel" style="font-size:12px;color:#8a8a85;margin-bottom:8px;">Try one:</p>
+      <div class="examples">
+        <button class="ex" data-q="What was our best day of the week?">What was our best day of the week?</button>
+        <button class="ex" data-q="Is revenue going up?">Is revenue going up?</button>
+        <button class="ex" data-q="How does this month compare to last?">How does this month compare to last?</button>
+      </div>
+      <div class="sep"></div>
+      <div class="thread" id="thread"></div>
+      <div class="ask">
+        <input id="askInput" placeholder="Ask a sales question…" aria-label="Ask a question">
+        <button id="askBtn">Ask</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const ANSWERS = {
+  "What was our best day of the week?": "Thursday is the best weekday, averaging 2,423.10 in daily revenue. See the chart beside this answer.",
+  "Is revenue going up?": "Yes. The 7-day average is 2,196.51, up 35.06% from the prior 7 days.",
+  "How does this month compare to last?": "This month brought 16,647.04, down 4.37% from last month's 17,407.27."
+};
+const means = [1806.99, 1905.60, 1811.17, 2423.10, 2295.95, 1559.12, 1829.99];
+const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const best = "Thu";
+const maxV = Math.max(...means);
+const bars = document.getElementById("bars");
+days.forEach((d, i) => {
+  const col = document.createElement("div");
+  col.className = "bar-col";
+  const h = Math.round(means[i] / maxV * 172);
+  const isBest = days[i] === best;
+  col.innerHTML = `<div class="bar${isBest ? " hot" : ""}" style="height:${h}px"></div><div class="day">${d}</div>`;
+  bars.appendChild(col);
+});
+document.querySelector('.bar.hot').style.background = "#8a6d3b";
+const thread = document.getElementById("thread");
+function ask(q) {
+  const qb = document.createElement("div");
+  qb.className = "msg q"; qb.textContent = q;
+  const ab = document.createElement("div");
+  ab.className = "msg a"; ab.textContent = ANSWERS[q] || "I can answer best day, trend, and month comparison questions.";
+  thread.appendChild(qb); thread.appendChild(ab);
+}
+document.querySelectorAll(".ex").forEach(b => b.addEventListener("click", () => ask(b.dataset.q)));
+document.getElementById("askBtn").addEventListener("click", () => {
+  const v = document.getElementById("askInput").value.trim();
+  if (v) ask(v);
+});
+document.getElementById("askInput").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("askBtn").click(); });
+</script>
+</body>
+</html>

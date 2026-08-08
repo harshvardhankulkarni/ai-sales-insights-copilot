@@ -4,13 +4,14 @@
 
 ## Environment Variables
 
-The app reads settings from `.env` at the project root. Load it with python-dotenv.
+The app reads settings from `.env` at the project root with python-dotenv.
 
 | Variable | Required | Default | Purpose |
 |---|---|---|---|
-| OPENAI_API_KEY | Yes | none | Your OpenAI secret key |
-| LLM_MODEL | No | gpt-4o-mini | Model for classification and insight |
-| SALES_DAYS | No | 180 | Days of synthetic sales to generate |
+| OPENROUTER_API_KEY | Yes | none | Key for the LLM backend |
+| LLM_MODEL | No | openai/gpt-oss-20b:free | Model for classification and insight |
+
+The generator has one more setting, `SALES_DAYS`. It lives in `.env.example` for reference. The committed CSV already holds 365 days, so the generator is only used if the file goes missing.
 
 ## Setup
 
@@ -21,44 +22,29 @@ cp .env.example .env
 Edit `.env`.
 
 ```
-OPENAI_API_KEY=sk-your-key-here
-LLM_MODEL=gpt-4o-mini
-SALES_DAYS=180
+OPENROUTER_API_KEY=your-key-here
+LLM_MODEL=openai/gpt-oss-20b:free
 ```
+
+## LLM Backend
+
+The app calls OpenRouter at `https://openrouter.ai/api/v1` through `langchain-openai`'s `ChatOpenAI` with a custom base URL. The default model `openai/gpt-oss-20b:free` costs nothing.
+
+Free models are rate limited. Every call sends `request_timeout=30` and `max_retries=1`. When the model is slow or unavailable, the pipeline returns a grounded fallback written from the pandas numbers. The app never hangs.
 
 ## Security
 
 - Never commit `.env`. The `.gitignore` excludes it.
-- The API key stays in `.env` only.
+- A key pasted into chat or a screenshot is a leaked key. Rotate it at https://openrouter.ai/keys.
 - No secret goes into code or the docs.
-- Use `.env.example` for the committed template with placeholder values.
+- `.env.example` holds placeholder values only.
 
 ## Data Files
 
-`data/sales.csv` holds the generated sales. It is a build artifact. Add it to `.gitignore` or keep it, your choice. The loader regenerates it when missing.
+`data/sales.csv` is committed. It is the app input: 365 daily rows derived from the real Tableau Superstore dataset.
 
-## Model Selection
-
-`LLM_MODEL` defaults to `gpt-4o-mini`. Swap it for another OpenAI model if you want. Keep the change local. The cost stays low with the default.
-
-## Settings Reference
-
-| Setting | Where used |
-|---|---|
-| OPENAI_API_KEY | `app/understand.py`, `app/insights.py` |
-| LLM_MODEL | LangChain client setup |
-| SALES_DAYS | `scripts/generate_sales.py`, `app/data.py` |
-
-## Changing SALES_DAYS
-
-Set a new number in `.env`, delete `data/sales.csv` if present, and rerun:
-
-```bash
-python scripts/generate_sales.py
-```
-
-The loader reads the new value on startup.
+`data/raw/superstore-sales.csv` is the large source file. It is git-ignored and stays out of the public repo.
 
 ## Local Only
 
-This project runs locally. No production hosting. The GitHub Pages page hosts the static docs and architecture diagram, not the Streamlit app.
+This project runs locally. GitHub Pages hosts the static docs and the architecture diagram. The Streamlit app runs from your terminal only.
