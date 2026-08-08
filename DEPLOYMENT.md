@@ -51,6 +51,12 @@ streamlit run frontend/streamlit_app.py
 
 Open `localhost:8501`.
 
+Live deployment: streamlit run on GitHub pushes to Streamlit Cloud. Free URL:
+
+```
+https://ai-sales-insights-copilot.streamlit.app/
+```
+
 ## 6. Tests
 
 ```bash
@@ -86,11 +92,30 @@ Pages URL after a few minutes:
 https://harshvardhankulkarni.github.io/ai-sales-insights-copilot/
 ```
 
-Pages serves the README and the docs. The Streamlit app runs locally only. The public page is the project story and architecture report.
+Pages serves the README and the docs. It is the static project story.
 
-## 9. Notes
+## 9. Streamlit Cloud
 
-- This is a local demo. No cloud hosting for the Streamlit app.
-- The API key stays in `.env` locally.
+The live app runs on Streamlit Community Cloud:
+
+```
+https://ai-sales-insights-copilot.streamlit.app/
+```
+
+Deploy steps:
+
+1. Sign in at share.streamlit.io with your GitHub account.
+2. New app, from existing repo: `harshvardhankulkarni/ai-sales-insights-copilot`.
+3. Branch `main`, main file `frontend/streamlit_app.py`.
+4. Deploy. The build pulls requirements.txt exactly.
+5. Settings, Secrets: add `OPENROUTER_API_KEY`.
+
+Every git push to main redeploys the app automatically.
+
+## 10. Notes
+
+- The live app runs on Streamlit Cloud. The local run is for development.
+- Locally the API key lives in `.env`, never committed. On the cloud it lives in Settings, Secrets.
 - The app talks to OpenRouter, not directly to OpenAI.
 - Free models are rate limited. Slow answers are expected, and the app turns a slow model into a grounded fallback instead of a hang.
+- The free Cloud tier sleeps after inactivity. First visit after sleep takes about 30 seconds to wake.

@@ -56,6 +56,8 @@ Open http://localhost:8501. Data is committed, no generation needed.
 
 ## The app
 
+Live demo: https://ai-sales-insights-copilot.streamlit.app/
+
 ![Executive Desk theme](assets/screenshot.png)
 
 ## Verify
