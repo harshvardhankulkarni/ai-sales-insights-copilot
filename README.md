@@ -74,6 +74,7 @@ python scripts/smoke_test.py                  # full live pipeline test, minutes
 - `docs/DEVELOPMENT.md`: build workflow and milestones.
 - `docs/TESTING.md`: tests and manual checklist.
 - `docs/CONFIGURATION.md`: environment keys and defaults.
+- `BENCHMARK.md`: the question bank with expected answers.
 
 ## Project state
 
