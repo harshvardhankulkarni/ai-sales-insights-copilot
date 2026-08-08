@@ -31,8 +31,11 @@ source of project context.
   on idle). Every push to main redeploys.
 - Next step: none. Project complete.
 - App files: app/data.py, app/analyze.py, app/charts.py, app/understand.py,
-  app/insights.py, app/pipeline.py, app/__init__.py, frontend/streamlit_app.py.
-  tests/ has 4 files, 22 tests, all pass.
+  app/insights.py, app/llm.py, app/pipeline.py, app/__init__.py,
+  frontend/streamlit_app.py. tests/ has 5 files, 28 tests, all pass.
+- LLM failover chain: app/llm.py tries OpenRouter free (LLM_MODEL), then
+  OpenRouter paid (LLM_MODEL2), then Gemini (GEMINI_API_KEY), then canned.
+  Timeouts 30/20/15s. 2026-08-09 it survived the free tier 429 cap cleanly.
 
 ## Data
 - `data/sales.csv` (365-day daily series) is the app input. It is committed.

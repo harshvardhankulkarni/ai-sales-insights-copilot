@@ -2,20 +2,14 @@
 
 The only LLM job on this pipeline: pick the right type from a question.
 It does not compute. It does not answer. It classifies.
-Runs through OpenRouter (https://openrouter.ai) with a free model.
+Runs through the failover chain in llm.py: OpenRouter free, then
+OpenRouter paid, then Gemini, then a grounded fallback.
 """
 
-import os
-
-from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
-
-load_dotenv()
+from app.llm import latest_reply
 
 VALID_TYPES = {"trend", "best_day", "comparison"}
 FALLBACK = "fallback"
-
-OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 
 _SYSTEM_PROMPT = (
     "You classify sales questions into exactly one type. "
@@ -50,17 +44,10 @@ def classify_question(question: str, llm=None) -> dict:
     """
     try:
         if llm is None:
-            model = os.getenv("LLM_MODEL", "openai/gpt-oss-20b:free")
-            llm = ChatOpenAI(
-                model=model,
-                temperature=0,
-                base_url=OPENROUTER_BASE,
-                api_key=os.getenv("OPENROUTER_API_KEY"),
-                request_timeout=30,
-                max_retries=1,
-            )
-        reply = llm.invoke(_SYSTEM_PROMPT + "\n\nQuestion: " + question)
-        raw = reply.content
+            raw = latest_reply(_SYSTEM_PROMPT + "\n\nQuestion: " + question)
+        else:
+            reply = llm.invoke(_SYSTEM_PROMPT + "\n\nQuestion: " + question)
+            raw = reply.content
     except Exception:
         return {"type": FALLBACK, "question": question}
 

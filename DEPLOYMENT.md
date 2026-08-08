@@ -117,5 +117,6 @@ Every git push to main redeploys the app automatically.
 - The live app runs on Streamlit Cloud. The local run is for development.
 - Locally the API key lives in `.env`, never committed. On the cloud it lives in Settings, Secrets.
 - The app talks to OpenRouter, not directly to OpenAI.
+- The failover chain still works on the cloud: add the same env keys (LLM_MODEL2, GEMINI_API_KEY) to Settings, Secrets.
 - Free models are rate limited. Slow answers are expected, and the app turns a slow model into a grounded fallback instead of a hang.
 - The free Cloud tier sleeps after inactivity. First visit after sleep takes about 30 seconds to wake.

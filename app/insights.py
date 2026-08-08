@@ -1,30 +1,12 @@
 """Insight writer. The LLM turns computed numbers into plain prose.
 
 This module never computes. It receives a result dict from analyze.py
-and writes sentences about the numbers that are already in it. If the
-model call fails, a canned fallback keeps the pipeline alive.
+and writes sentences about the numbers that are already in it. The
+model call runs through the failover chain in llm.py. When every
+slot fails, a canned fallback keeps the pipeline alive.
 """
 
-import os
-
-from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
-
-load_dotenv()
-
-OPENROUTER_BASE = "https://openrouter.ai/api/v1"
-
-
-def _make_llm() -> ChatOpenAI:
-    model = os.getenv("LLM_MODEL", "openai/gpt-oss-20b:free")
-    return ChatOpenAI(
-        model=model,
-        temperature=0,
-        base_url=OPENROUTER_BASE,
-        api_key=os.getenv("OPENROUTER_API_KEY"),
-        request_timeout=30,
-        max_retries=1,
-    )
+from app.llm import latest_reply
 
 
 def _prompt_for(result: dict) -> str:
@@ -77,9 +59,10 @@ def write_insight(result: dict, llm=None) -> str:
     fallback = _fallback_for(result)
     try:
         if llm is None:
-            llm = _make_llm()
-        reply = llm.invoke(_prompt_for(result))
-        text = (reply.content or "").strip()
+            text = latest_reply(_prompt_for(result))
+        else:
+            reply = llm.invoke(_prompt_for(result))
+            text = (reply.content or "").strip()
         return text if text else fallback
     except Exception:
         return fallback
@@ -103,9 +86,10 @@ def write_weekly_insight(df, llm=None) -> str:
     )
     try:
         if llm is None:
-            llm = _make_llm()
-        reply = llm.invoke(prompt)
-        text = (reply.content or "").strip()
+            text = latest_reply(prompt)
+        else:
+            reply = llm.invoke(prompt)
+            text = (reply.content or "").strip()
         return text if text else fallback
     except Exception:
         return fallback
