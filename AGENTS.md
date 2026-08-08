@@ -26,7 +26,9 @@ source of project context.
   boots headless, 4 KPI cards + chart + ask panel render, no traceback,
   app screenshot in assets/. All 6 GSD docs + README rewritten to match
   the real build (OpenRouter free model, committed data). Committed and
-  pushed. Pages documented in DEPLOYMENT.md.
+  pushed. Pages documented in DEPLOYMENT.md. Live on Streamlit Cloud:
+  https://ai-sales-insights-copilot.streamlit.app/ (free tier, sleeps
+  on idle). Every push to main redeploys.
 - Next step: none. Project complete.
 - App files: app/data.py, app/analyze.py, app/charts.py, app/understand.py,
   app/insights.py, app/pipeline.py, app/__init__.py, frontend/streamlit_app.py.
