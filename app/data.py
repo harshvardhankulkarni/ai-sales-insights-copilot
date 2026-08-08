@@ -4,9 +4,15 @@ The only job of this module: turn data/sales.csv into a DataFrame.
 Nothing else lives here.
 """
 
+import os
+
 import pandas as pd
 
-DATA_FILE = "data/sales.csv"
+DATA_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "data",
+    "sales.csv",
+)
 
 
 def load_sales(path: str = DATA_FILE) -> pd.DataFrame:
