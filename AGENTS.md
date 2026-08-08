@@ -21,6 +21,7 @@ GenAI.
 | File | Role |
 |---|---|
 | AI_MEMORY.md | MUST READ FIRST. Full context for any AI tool. |
+| IDEA.md | The idea: what this project is, why it exists, who it serves. |
 | ROADMAP.md | Step ladder. Level 1 to Level 5. Checkpoint per level. |
 | LEARNING_JOURNEY.md | Beginner learning path with glossary and progress log. |
 | SKILLS.md | Which Hermes skills to load and when. |
