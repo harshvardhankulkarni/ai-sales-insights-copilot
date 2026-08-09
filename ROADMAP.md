@@ -80,3 +80,4 @@ Your agent asks you questions when a step is not clear and keeps the pace to you
 | 3.x charts + NL | Done | Checkpoint passed 2026-08-08 via OpenRouter (gpt-oss-20b:free): best_day, trend, comparison, fallback all correct. 12 pytest pass. |
 | 4.x insight + pipeline | Done | Checkpoint passed 2026-08-08. best_day + comparison live: numbers + chart + insight. Weekly insight grounded. 22 pytest pass. |
 | 5.x UI + finalize | Done | Checkpoint passed 2026-08-09. Executive Desk theme chosen from 3 sketches. frontend built, boots clean, 4 KPI cards + chart + ask panel verified headless. 22 pytest pass. Docs rewritten to real build. Pushed. |
+| Extras | Done | BENCHMARK.md with expected answers. Failover chain (app/llm.py) 3 slots + canned, 28 pytest pass. WALKTHROUGH.md. README voice notes. Live on Streamlit Cloud. |
